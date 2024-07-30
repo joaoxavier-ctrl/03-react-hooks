@@ -10,10 +10,21 @@ import Produtos from './Produtos';
 
 
 const Exercicio = () => {
+  const [produto, setProduto] = React.useState(null);
   const [dados, setDados] = React.useState(null);
   const [carregando, setCarregando] = React.useState(null);
 
+  React.useEffect(() => {
+    const produtoLocal = window.localStorage.getItem('produto');
+    if(produtoLocal !== null) setProduto(produtoLocal);
+  },[]);
+
+  React.useEffect(() => {
+    if(produto !== null) window.localStorage.setItem('produto', produto);
+  }, [produto]);
+
   async function handleClick(event) {
+    setProduto(event.target.innerText);
     setCarregando(true);
     const response = await fetch(
       `https://ranekapi.origamid.dev/json/api/produto/${event.target.innerText}`,
@@ -25,11 +36,11 @@ const Exercicio = () => {
 
   return (
     <div>
-      <h1>Preferencia: </h1>
-      <button onClick={handleClick}>Notebook</button>
+      <h1>Preferencia: {produto}</h1>
+      <button style={{ margin: '10px' }} onClick={handleClick}>Notebook</button>
       <button onClick={handleClick}>Smartphone</button>
       {carregando && <p>Carregando...</p>}
-      {!carregando && dados && <Produtos dados={dados} />}
+      {!carregando && dados && <Produtos dados={dados} />} 
     </div>
   )
 }
